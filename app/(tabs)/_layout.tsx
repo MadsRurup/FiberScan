@@ -22,7 +22,9 @@ function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Image
               source={require('@/assets/icons/store.svg')}
-              style={{ width: size, height: size, tintColor: color }}
+              width={size}
+              height={size}
+              tintColor={color}
             />) 
         }}
 
@@ -34,7 +36,9 @@ function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Image
               source={require('@/assets/icons/home.svg')}
-              style={{ width: size, height: size, tintColor: color }}
+              width={size}
+              height={size}
+              tintColor={color}
             />)
         }}
 
@@ -46,12 +50,15 @@ function TabLayout() {
           tabBarIcon: ({ color, size }) => (
             <Image
               source={require('@/assets/icons/qr.svg')}
-              style={{ width: size, height: size, tintColor: color }}
-            />)
+              width={size}
+              height={size}
+              tintColor={color}
+            />
+)
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="profile/index"
         options={{
           title: 'Profil', // Title for the tab
         }}

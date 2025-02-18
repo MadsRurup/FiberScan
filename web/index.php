@@ -28,49 +28,97 @@ if ($resource === "users") {
         http_response_code(405);
         echo json_encode(["error" => "Method not allowed"]);
     }
-} else if ($resource === "items") {
+} else if ($resource === "products") {
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        getItem($id);
+        getProduct($id);
     } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        createItem();
+        createProduct();
     } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-        updateItem($id);
+        updateProduct($id);
     } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-        deleteItem($id);
+        deleteProduct($id);
     } else {
         http_response_code(405);
         echo json_encode(["error" => "Method not allowed"]);
+    } 
+} else if ($resource === "register") {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        register();
     }
-} else {
+} 
+else if ($resource === "login") {
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        getProduct($id);
+    } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        login();
+    } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+        updateProduct($id);
+    } elseif ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+        deleteProduct($id);
+    } else {
+        http_response_code(405);
+        echo json_encode(["error" => "Method not allowed"]);
+    } 
+}
+else {
     http_response_code(404);
     echo json_encode(["error" => "Resource not found"]);
 }
 
+function register() {
+    $entityBody = file_get_contents('php://input');
+    echo $entityBody;
+    echo extract($_POST);
+    $username = $_POST['username'];
+    $password = password_hash($_POST['password'], PASSWORD_BCRYPT); // Hash password
+    echo json_encode([$username,$_POST['password']],JSON_UNESCAPED_UNICODE);
+    $stmt = $pdo->prepare("INSERT INTO users (username) VALUES (?)");
+    $stmt->execute([$username]);
+    $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ?");
+    $stmt->execute([$username]);
+    echo json_encode($stmt2);
+}
+
 // Function to get user
-function getItem($id) {
+function getProduct($id) {
+  	global $pdo;
+    $sku = $_GET['sku'];
+    
     if (!$id) {
-        http_response_code(400);
-        echo json_encode(["error" => "User ID required"]);
-        return;
+        if ($sku); {
+            $statement = $pdo->prepare("SELECT * FROM products WHERE sku = ?");
+            $statement->execute([$sku]);
+            $row = $statement->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($row, JSON_UNESCAPED_UNICODE);
+            return;
+        }
+        $statement = $pdo->prepare("SELECT * FROM products");
+        $statement->execute();
+        $row = $statement->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($row, JSON_UNESCAPED_UNICODE);
+    }else{
+        
+    $statement = $pdo->prepare("SELECT * FROM products WHERE id = ?");
+    $statement->execute([$id]);
+    $row = $statement->fetch(PDO::FETCH_ASSOC);
+    echo json_encode($row, JSON_UNESCAPED_UNICODE);
     }
-    // Dummy data
-    echo json_encode(["id" => $id, "name" => "Item 1"]);
 }
 
 // Function to get user
 function getUser($id) {
   	global $pdo;
     if (!$id) {
-        http_response_code(400);
-        echo json_encode(["error" => "User ID required"]);
-        return;
-    }
+        $statement = $pdo->prepare("SELECT * FROM users");
+        $statement->execute();
+        $row = $statement->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode($row, JSON_UNESCAPED_UNICODE);
+    }else{
     $statement = $pdo->prepare("SELECT * FROM users WHERE id = ?");
     $statement->execute([$id]);
     $row = $statement->fetch(PDO::FETCH_ASSOC);
     echo json_encode($row, JSON_UNESCAPED_UNICODE);
-    // Dummy data
-    //echo json_encode(["id" => $id, "name" => "John Doe"]);
+    }
 }
 
 // Function to create user
@@ -104,4 +152,7 @@ function deleteUser($id) {
     }
     echo json_encode(["message" => "User $id deleted"]);
 }
+
+
+
 ?>
